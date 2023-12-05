@@ -2,3 +2,7 @@ node_modules/
 bin/
 temp/
 .vscode/
+.idea/
+
+input.txt
+input_short.txt
