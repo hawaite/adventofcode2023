@@ -1,4 +1,4 @@
-object Part1 {
+object Part2 {
     data class AlmanacMap(val mapType:String, val mapRanges: List<AlmanacMapRange>)
     data class AlmanacMapRange(val sourceRangeStart: Long, val destRangeStart: Long, val rangeLength: Long)
 
@@ -54,20 +54,27 @@ object Part1 {
         return foundMappedVal
     }
 
+    private fun parseSeedRow(seedRow: String): List<LongRange> {
+        val seedLst = seedRow.split(" ").drop(1)
+        val rangeList = mutableListOf<LongRange>()
+        for ( i in 0..<seedLst.count() step 2){
+            rangeList.add(LongRange(seedLst[i].toLong(), seedLst[i].toLong() + seedLst[i+1].toLong() - 1))
+        }
+
+        return rangeList
+    }
+
     fun solve(rowList: List<String>){
 
-        val seedStr = rowList[0]
-        val seedLst = seedStr.split(" ")
-
-        val seedList = seedLst.subList(1,seedLst.size)
-
+        val seedList = parseSeedRow(rowList[0])
+        println(seedList)
         val almanacMaps = parseAlmanac(rowList.slice(2..<rowList.count()))
 
         val startTime = System.currentTimeMillis()
         val locationList =
-            seedList
+            seedList[0]
                 .asSequence()
-                .map { performTransform(almanacMaps["seed-to-soil"]!!, it) }
+                .map { performTransform(almanacMaps["seed-to-soil"]!!, it.toString()) }
                 .map { performTransform(almanacMaps["soil-to-fertilizer"]!!, it) }
                 .map { performTransform(almanacMaps["fertilizer-to-water"]!!, it) }
                 .map { performTransform(almanacMaps["water-to-light"]!!, it) }
