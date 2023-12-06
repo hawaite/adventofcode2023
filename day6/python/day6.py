@@ -1,5 +1,6 @@
 import os
 import functools
+import math
 
 def main(partTwo):
     cwd = os.path.dirname(__file__)
@@ -20,15 +21,14 @@ def main(partTwo):
         race_time = int(times[race_number])
         race_record_distance = int(distances[race_number])
 
-        number_beating_the_record = 0
-        for i in range(0, race_time + 1):
+        for i in range(0, math.floor((race_time+1)/2)): # check up to half
             distance_per_ms = i
-            time_to_travel_ms = race_time - i
-            total_distance = time_to_travel_ms * distance_per_ms
+            time_left_to_travel_ms = race_time - i
+            total_distance = time_left_to_travel_ms * distance_per_ms
             if ( total_distance > race_record_distance):
-                number_beating_the_record = number_beating_the_record + 1
-
-        potential_wins_per_race.append(number_beating_the_record)
+                # we found the point where we start beating the record and can infer the total
+                potential_wins_per_race.append( race_time - (2 * i) + 1)
+                break
 
     print(f"multiplied: {functools.reduce(lambda x,y: x*y, potential_wins_per_race)}")
 
