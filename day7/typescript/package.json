@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "start": "yarn run build && node bin/day7part1.js",
+    "exec": "node bin/day7part1.js",
+    "build": "tsc src/day7part1.ts --outDir ./bin",
+    "test": "jest",
+    "clean": "rm -rf bin",
+    "lint": "yarn run eslint .",
+    "lint:fix": "yarn run eslint . --fix"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/lodash": "^4.14.202",
+    "jest": "^29.7.0",
+    "lodash": "^4.17.21",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  }
+}
