@@ -5,4 +5,4 @@ temp/
 .idea/
 
 input.txt
-input_short.txt
+input_*.txt
