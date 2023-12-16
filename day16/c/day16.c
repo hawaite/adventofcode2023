@@ -206,8 +206,32 @@ void solve_rec(
     }
 }
 
+int get_energized_tile_count(grid* map_grid, int16_t starting_row, int16_t starting_col, enum DIRECTION starting_beam_direction){
+    grid* seen_transition_map = create_grid(map_grid->row_count, map_grid->col_count);
+
+    solve_rec(
+        map_grid, 
+        seen_transition_map, 
+        starting_row, 
+        starting_col, 
+        starting_beam_direction);
+
+    int count = 0;
+    for(int i = 0; i < (map_grid->row_count * map_grid->col_count); i++){
+        if(seen_transition_map->grid_data[i] != 0){
+            count++;
+        }
+    }
+
+    free_grid(seen_transition_map);
+    return count;
+}
+
 int main(int argc, char** argv){
+    int part_two = 1;
+
     char* input_file;
+
     if (argc == 2) {
         input_file = argv[1];
     } else {
@@ -225,17 +249,43 @@ int main(int argc, char** argv){
     pretty_print_grid(map_grid);
     printf("=============== START =================\n");
 
-    grid* seen_transition_map = create_grid(row_count, col_count);
+    if(part_two == 0){
+        int count = get_energized_tile_count(map_grid, 0,0,RIGHT);
+        printf("Count: %d\n", count);
+    }
+    else{
+        int highest_count = 0;
+        // loop the two starting points on each row
+        for(int i = 0; i < map_grid->row_count; i++){
+            int count_from_left_edge = get_energized_tile_count(map_grid, i,0,RIGHT);
+            int count_from_right_edge = get_energized_tile_count(map_grid, i,(map_grid->col_count)-1, LEFT);
 
-    solve_rec(map_grid, seen_transition_map, 0, 0, RIGHT);
-
-    int count = 0;
-    for(int i = 0; i < (row_count * col_count); i++){
-        if(seen_transition_map->grid_data[i] != 0){
-            count++;
+            if(count_from_left_edge > highest_count){
+                highest_count = count_from_left_edge;
+            }
+            if(count_from_right_edge > highest_count){
+                highest_count = count_from_right_edge;
+            }
         }
+
+        // loop the two starting points on each column
+        for(int i = 0; i < map_grid->col_count; i++){
+            int count_from_top_edge = get_energized_tile_count(map_grid, 0,i,DOWN);
+            int count_from_bottom_edge = get_energized_tile_count(map_grid, (map_grid->row_count) - 1, i, UP);
+
+            if(count_from_top_edge > highest_count){
+                highest_count = count_from_top_edge;
+            }
+            if(count_from_bottom_edge > highest_count){
+                highest_count = count_from_bottom_edge;
+            }
+        }
+
+        printf("Part 2 highest count: %d\n", highest_count);
     }
 
-    printf("Count: %d\n", count);
+
+    free_grid(map_grid);
+
     return 0;
 }
