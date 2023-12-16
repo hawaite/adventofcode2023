@@ -90,6 +90,7 @@ enum DIRECTION get_reflected_direction(char mirror, enum DIRECTION incoming_dire
                 return UNKNOWN;
         }
     }
+    return UNKNOWN;
 }
 
 void pretty_print_transition_map(grid* transition_map){
