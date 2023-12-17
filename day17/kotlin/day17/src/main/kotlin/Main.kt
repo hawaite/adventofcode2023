@@ -39,6 +39,13 @@ fun main(args: Array<String>) {
     val rowList = object {}.javaClass.getResourceAsStream("input.txt")?.bufferedReader()?.readLines()
         ?: throw Error("row list was null")
 
+    val partTwo = false
+    var maxStepsInOneDirection = 3
+    val minStepsInOneDirection = 4
+
+    if(partTwo){
+        maxStepsInOneDirection = 10
+    }
     val grid = rowList.map { row -> row.map { char -> char.toString().toInt() } }
 
     val openQueue = PriorityQueue<CrucibleState>()
@@ -101,7 +108,8 @@ fun main(args: Array<String>) {
             }
         }
         else{
-            if(currentState.stepsInThisDirection < 3){
+            if((currentState.stepsInThisDirection < minStepsInOneDirection) && partTwo){
+                // we HAVE to step in the current direction ONLY
                 val newRow = currentState.row + currentState.rowDirection
                 val newCol = currentState.col + currentState.colDirection
 
@@ -114,27 +122,49 @@ fun main(args: Array<String>) {
                         currentState.rowDirection,
                         currentState.colDirection,
                         currentState.stepsInThisDirection + 1
-                        )
+                    )
                     )
                 }
             }
+            else {
+                // we are above the minimum distance
+                // if we are above the max, for a direction change
+                // if not, add all directions
+                if(currentState.stepsInThisDirection < maxStepsInOneDirection){
+                    val newRow = currentState.row + currentState.rowDirection
+                    val newCol = currentState.col + currentState.colDirection
 
-            // now we can add all directions that arent straight ahead, and arent behind us
-            for (neighbourDirection in getDirectionsThatArentStraightAheadOrBehind(currentState.rowDirection, currentState.colDirection)){
-                val newRow = currentState.row + neighbourDirection.rowChange
-                val newCol = currentState.col + neighbourDirection.colChange
+                    // bounds check this new point and add it to the priority queue if valid
+                    if(newRow in 0..<rowCount && newCol in 0..<colCount){
+                        openQueue.add(CrucibleState(
+                            currentState.cumulativeHeatLoss + grid[newRow][newCol],
+                            newRow,
+                            newCol,
+                            currentState.rowDirection,
+                            currentState.colDirection,
+                            currentState.stepsInThisDirection + 1
+                        )
+                        )
+                    }
+                }
 
-                // bounds check this new point and add it to the priority queue if valid
-                if(newRow in 0..<rowCount && newCol in 0..<colCount){
-                    openQueue.add(CrucibleState(
-                        currentState.cumulativeHeatLoss + grid[newRow][newCol],
-                        newRow,
-                        newCol,
-                        neighbourDirection.rowChange,
-                        neighbourDirection.colChange,
-                        1 // change in direction means reset the step count
-                    )
-                    )
+                // now we can add all directions that arent straight ahead, and arent behind us
+                for (neighbourDirection in getDirectionsThatArentStraightAheadOrBehind(currentState.rowDirection, currentState.colDirection)){
+                    val newRow = currentState.row + neighbourDirection.rowChange
+                    val newCol = currentState.col + neighbourDirection.colChange
+
+                    // bounds check this new point and add it to the priority queue if valid
+                    if(newRow in 0..<rowCount && newCol in 0..<colCount){
+                        openQueue.add(CrucibleState(
+                            currentState.cumulativeHeatLoss + grid[newRow][newCol],
+                            newRow,
+                            newCol,
+                            neighbourDirection.rowChange,
+                            neighbourDirection.colChange,
+                            1 // change in direction means reset the step count
+                        )
+                        )
+                    }
                 }
             }
         }
